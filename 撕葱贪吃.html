@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>Title</title>
+</head>
+<style>
+    *{margin: 0;padding: 0}
+    body{text-align: center}
+    .content{width: 600px;height: 600px;margin: 0 auto;background-color: white;border: 5px solid black}
+    .none{width: 30px;height: 30px;float: left}
+    .hotdog{background-image: url("img/hotdog.png");background-repeat:no-repeat; background-size:100% 100%;}
+    .hotdog_left{background-image: url("img/left.png");background-repeat:no-repeat; background-size:100% 100%;}
+    .hotdog_right{background-image: url("img/right.png");background-repeat:no-repeat; background-size:100% 100%;}
+    .hotdog_up{background-image: url("img/up.png");background-repeat:no-repeat; background-size:100% 100%;}
+    .hotdog_down{background-image: url("img/down.png");background-repeat:no-repeat; background-size:100% 100%;}
+    </style>
+<body>
+ <div class="content" id="main">
+     <div class="hotdog none" id="0"></div>
+     <div class="hotdog_right none" id="1"></div>
+ </div>
+<a>点击键盘上的↓箭头 开始游戏</a>
+</body>
+<script>
+    var num_0 = null;/*记录产生随机热狗的id*/
+    var snake = [0,1];/*c贪吃蛇的整体数组*/
+    var all = [0,1];/*记录全局的数组*/
+    var time_now = 0;/*控制全局的蛇方向函数*/
+    var key = 39;/*当前的前进方向*/
+    var left_dead = [0,20,40,60,80,100,120,140,160,180,200,220,240,260,280,300,320,340,360,380];
+    var right_dead = [19,39,59,79,99,119,139,159,179,199,219,239,259,279,299,319,339,359,379,399];
+  /*  var keydown_save = [];/!*保存所有操作的数组*!/*/
+  /*  var time_now = 0;/!*控制单个按钮的移动方向*!/*/
+     for (var i=2;i<400;i++) {
+         document.getElementById("main").innerHTML += "<div id=\""+i+"\" class=\"none\"></div>";
+         all.push(i);
+     }/*生成400个块*/
+
+   var right  = function () {
+       var m =snake[snake.length - 1]+1;
+        for(var i =0;i<snake.length;i++) {
+            if (snake[i] === m) {return}}
+        for (var l =0;l<right_dead.length;l++){
+            if(right_dead[l] === m-1){alert("你号没了");return}}
+            snake.push(m);
+            if(m !== num_0){
+                document.getElementById(snake[0]).classList.remove("hotdog");
+                snake.shift();}else {do_it()}
+            document.getElementById(m-1).className = "hotdog none";
+            document.getElementById(m).classList.add("hotdog_right");
+
+    };
+   var left  = function () {
+       var m =snake[snake.length - 1]-1;
+       for(var i =0;i<snake.length;i++){
+           if(snake[i]===m){return}}
+       for (var l =0;l<right_dead.length;l++){
+           if(left_dead[l] === m+1){alert("你号没了");return}}
+       snake.push(m);
+       if(m !== num_0){
+           document.getElementById(snake[0]).classList.remove("hotdog");
+           snake.shift();}else {do_it()}
+       document.getElementById(m+1).className = "hotdog none";
+       document.getElementById(m).classList.add("hotdog_left");
+   };
+   var up  = function () {
+       var m =snake[snake.length - 1]-20;
+       if(m<0){return}
+       for(var i =0;i<snake.length;i++){
+           if(snake[i]===m){alert("你号没了");return}}
+       snake.push(m);
+       if(m !== num_0){
+           document.getElementById(snake[0]).classList.remove("hotdog");
+           snake.shift();}else {do_it()}
+       document.getElementById(m+20).className = "hotdog none";
+       document.getElementById(m).classList.add("hotdog_up");
+   };
+   var down  = function () {
+       var m =snake[snake.length - 1]+20;
+       if(m>399){return}
+       for(var i =0;i<snake.length;i++){
+           if(snake[i]===m){alert("你号没了");return}}
+       snake.push(m);
+       if(m !== num_0){
+           document.getElementById(snake[0]).classList.remove("hotdog");
+           snake.shift();}else {do_it()}
+       document.getElementById(m-20).className = "hotdog none";
+       document.getElementById(m).classList.add("hotdog_down");
+   };
+
+   document.addEventListener("keyup",drag);
+
+   function drag(ev) {
+       switch (ev.keyCode){
+           case 39:
+               if(key === 38 ||key === 40){
+               key = 39;
+               window.clearInterval(time_now);right();
+               time_now = window.setInterval(function () {
+                   right();
+               },300);
+               break;
+           }else {break;}
+           case 37:
+               if(key ===38 || key ===40){
+                   key = 37;
+                   window.clearInterval(time_now);left();
+                   time_now = window.setInterval(function () {
+                       left();
+                   },300);
+                   break;
+               }else {break;}
+           case 38:
+           if(key ===37 || key===39){
+               key = 38;
+               window.clearInterval(time_now);up();
+               time_now = window.setInterval(function () {
+                   up();
+               },300);
+               break;
+           }else {break;}
+           case 40:
+               if(key ===37 || key===39){
+                   key = 40;
+               window.clearInterval(time_now);down();
+               time_now = window.setInterval(function () {
+                  down();
+              },300);
+              break;
+               }else {break;}
+       }
+   }
+
+   var do_it = function () {
+       for (var i=0;i<snake.length;i++){
+           all.splice(snake[i]-1,1);}/*删除过的数组*/
+       var num_1 =Math.round(Math.random()* all.length);/*生成删除过的数组的长度以内的随机数*/
+       var num =all[num_1];/*获取随机产生的热狗位置id*/
+       console.log(num);
+       document.getElementById(num).className = "hotdog none";/*生成热狗*/
+       num_0 = num;
+   };
+
+do_it();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*  document.addEventListener("keyup",drag);
+
+    function drag(ev) {
+       switch (ev.keyCode){
+           case 39:
+               keydown_save.push("right");
+               for (var i =0;i<snake.length;i++){
+                   var time_out = setTimeout(right(i),600*i)
+               }
+               break;
+           case 37:
+               keydown_save.push("left");
+               left();break;
+           case 38:
+               keydown_save.push("up");
+               up();break;
+           case 40:
+               keydown_save.push("down");
+               down();break;
+
+       }
+
+    }
+
+     /!*随机生成热狗的  随机函数*!/
+    var do_it = function () {
+        var num =Math.round(Math.random()*400);/!*产生随机数*!/
+        if(num_0){document.getElementById(num_0).classList.remove("black");}
+        document.getElementById(num).classList.add("black");/!*去掉上次生成的热狗*!/
+        num_0 = num;
+    }
+
+    /!*贪吃蛇向右走的函数*!/
+    var right = function (i) {
+        window.clearInterval(time_now);
+                 = window.setInterval(function () {
+            document.getElementById(snake[i]).classList.remove("black");
+            snake[i] --;
+            document.getElementById(snake[i]).classList.add("black");
+        },600)
+
+    }
+
+    var left = function () {
+        window.clearInterval(time_now);
+        time_now = window.setInterval(function () {
+            document.getElementById(snake[0]).classList.remove("black");
+            snake[0] --;
+            document.getElementById(snake[0]).classList.add("black");
+        },600)
+    }
+
+    var up = function () {
+        window.clearInterval(time_now);
+        time_now = window.setInterval(function () {
+            document.getElementById(snake[0]).classList.remove("black");
+            snake[0] -= 20;
+            document.getElementById(snake[0]).classList.add("black");
+        },600)
+    }
+
+    var down = function () {
+        window.clearInterval(time_now);
+        time_now = window.setInterval(function () {
+            document.getElementById(snake[0]).classList.remove("black");
+            snake[0] +=20;
+            document.getElementById(snake[0]).classList.add("black");
+        },600)
+    }*/
+</script>
+</html>
